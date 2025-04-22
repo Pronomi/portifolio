@@ -1,0 +1,37 @@
+name: Sync Google Docs to Markdown
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 12 * * *'  # diariamente às 12h UTC
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: |
+          pip install google-api-python-client google-auth html2text
+
+      - name: Injetar chave da conta de serviço
+        run: echo "${{ secrets.SERVICE_ACCOUNT_KEY }}" > docstomarkdownsync-ebfb3ef29999.json
+
+      - name: Rodar script de sincronização
+        run: python sync_docs.py
+
+      - name: Commit e Push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add pages/
+          git commit -m "Atualização automática do Docs" || echo "Nada novo"
+          git push

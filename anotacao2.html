@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Anotação 1</title>
+  <link rel="stylesheet" href="style/main.css">
+  <script defer src="js/script.js"></script>
+  <script defer src="js/render-markdown.js"></script>
+</head>
+<body>
+  <button id="toggle-theme">Alternar Tema</button>
+  <p id="clock"></p>
+
+  <div class="terminal-window">
+    <div class="terminal-header">
+      <span>usuario@portfolio:~$</span> anotacao1.md
+    </div>
+    <div class="terminal-content" id="md-content">
+      <!-- Conteúdo do .md renderizado aqui -->
+    </div>
+  </div>
+
+  <script>
+    renderMarkdown('pages/anotacao2.md', 'md-content');
+  </script>
+</body>
+</html>
