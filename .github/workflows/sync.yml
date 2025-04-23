@@ -1,37 +1,41 @@
-name: Sync Google Docs to Markdown
+name: Sincronizar Docs para Markdown
 
 on:
-  workflow_dispatch:        # Roda manualmente
+  push:
+    branches: [ main ]
   schedule:
-    - cron: '0 12 * * *'    # Roda diariamente às 12h UTC
+    - cron: '0 * * * *'  # roda a cada hora (ajustável)
 
 jobs:
-  sync:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - name:  Clonar repositório
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+    - name:  Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          pip install google-api-python-client google-auth html2text
+    - name:  Instalar dependências
+      run: |
+        pip install --upgrade pip
+        pip install google-api-python-client google-auth html2text
 
-      - name: Adicionar chave da conta de serviço
-        run: echo "${{ secrets.SERVICE_ACCOUNT_KEY }}" > docstomarkdownsync.json
+    - name:  Criar arquivo de chave a partir do Secret
+      run: echo "$DOCS_SYNC_KEY" | base64 -d > docstomarkdownsync.json
+      env:
+        DOCS_SYNC_KEY: ${{ secrets.DOCS_SYNC_KEY }}
 
-      - name: Rodar script de sincronização
-        run: python sync_docs.py
+    - name:  Rodar script de sincronização
+      run: python sync_docs.py
 
-      - name: Commit e push das alterações
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add pages/
-          git commit -m "Sync Google Docs para Markdown automático" || echo "Nada novo para commitar"
-          git push
+    - name:  Commit de alterações nos arquivos MD
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add pages/*.md
+        git commit -m "🚀 Atualização automática de anotações" || echo "Nenhuma mudança"
+        git push
