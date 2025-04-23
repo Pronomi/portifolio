@@ -24,7 +24,7 @@ jobs:
         pip install --upgrade pip
         pip install google-api-python-client google-auth html2text
 
-    - name:  Criar arquivo de chave a partir do Secret
+    - name: Decodificar chave da conta de serviço (base64)
       run: echo "$DOCS_SYNC_KEY" | base64 -d > docstomarkdownsync.json
       env:
         DOCS_SYNC_KEY: ${{ secrets.DOCS_SYNC_KEY }}
