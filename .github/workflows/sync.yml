@@ -1,42 +1,41 @@
-name: Sincronizar Docs para Markdown
+name: Sincronizar Docs com Markdown
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   schedule:
-    - cron: '0 * * * *'  # roda a cada hora (ajustável)
+    - cron: '0 8 * * *' # roda todo dia às 08:00 UTC (05h BRT)
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name:  Clonar repositório
-      uses: actions/checkout@v3
+      - name: 📥 Clonar repositório
+        uses: actions/checkout@v3
 
-    - name:  Configurar Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
-    - name:  Instalar dependências
-      run: |
-        pip install --upgrade pip
-        pip install google-api-python-client google-auth html2text
+      - name: 📦 Instalar dependências
+        run: |
+          pip install google-api-python-client google-auth html2text
 
-    - name: Decodificar chave da conta de serviço (base64)
-      run: echo "$DOCS_SYNC_KEY" | base64 -d > docstomarkdownsync.json
-      env:
-        DOCS_SYNC_KEY: ${{ secrets.DOCS_SYNC_KEY }}
+      - name: 🔐 Criar chave da conta de serviço (do Secret base64)
+        run: echo "$DOCS_SYNC_KEY" | base64 -d > docstomarkdownsync.json
+        env:
+          DOCS_SYNC_KEY: ${{ secrets.DOCS_SYNC_KEY }}
 
-    - name:  Rodar script de sincronização
-      run: python sync_docs.py
+      - name: 🔄 Rodar sincronização
+        run: python sync_docs.py
 
-      - name: Push alterações com token de acesso pessoal
-      run: |
-        git config user.name "Carol Gomides (via GitHub Actions)"
-        git config user.email "github-actions@github.com"
-        git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/Pronomi/promind.github.io.git
-        git add pages/*.md
-        git commit -m "📄 Atualização automática de anotações do Google Docs" || echo "Nada para commitar"
-        git push origin main
+      - name: 📤 Commit e push automático
+        run: |
+          git config user.name "Carol Gomides (GitHub Actions)"
+          git config user.email "actions@github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/Pronomi/promind.git
+          git add pages/*.md
+          git commit -m "📄 Atualização automática das anotações" || echo "Nada para commitar"
+          git push origin main
