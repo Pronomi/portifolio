@@ -30,7 +30,7 @@ jobs:
 
       - name: 🔄 Rodar sincronização
         run: python sync_docs.py
-
+     
       - name: 📤 Commit e push automático
         run: |
           git config user.name "Carol Gomides (GitHub Actions)"
