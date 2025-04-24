@@ -32,10 +32,11 @@ jobs:
     - name:  Rodar script de sincronização
       run: python sync_docs.py
 
-    - name:  Commit de alterações nos arquivos MD
+      - name: Push alterações com token de acesso pessoal
       run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git config user.name "Carol Gomides (via GitHub Actions)"
+        git config user.email "github-actions@github.com"
+        git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/Pronomi/promind.github.io.git
         git add pages/*.md
-        git commit -m "🚀 Atualização automática de anotações" || echo "Nenhuma mudança"
-        git push
+        git commit -m "📄 Atualização automática de anotações do Google Docs" || echo "Nada para commitar"
+        git push origin main
